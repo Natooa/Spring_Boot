@@ -42,7 +42,6 @@ public class ReservationService {
         if (reservationToCreate.status() != null) {
             throw new IllegalArgumentException("Status should be empty");
         }
-
         var entityToSave = new ReservationEntity(
                 null,
                 reservationToCreate.userId(),

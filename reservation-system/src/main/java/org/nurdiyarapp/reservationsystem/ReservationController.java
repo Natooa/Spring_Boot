@@ -24,14 +24,11 @@ public class ReservationController {
     @GetMapping("/{id}")
     public ResponseEntity<Reservation> getReservationById(
             @PathVariable("id") Long id
-            ) {
+    ) {
         log.info("getReservationById");
-        try{
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(reservationService.getReservationById(id));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(404).build();
-        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(reservationService.getReservationById(id));
+
 //        return reservationService.getReservationById(id);
     }
 
@@ -45,7 +42,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<Reservation> createReservation(
             @RequestBody Reservation reservationToCreate
-    ){
+    ) {
         log.info("createReservation");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("test-header", "123")
@@ -70,13 +67,11 @@ public class ReservationController {
             @PathVariable("id") Long id
     ) {
         log.info("deleteReservation: id={}", id);
-        try{
-            reservationService.cancelReservation(id);
-            return ResponseEntity.ok()
-                    .build();
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(404).build();
-        }
+
+        reservationService.cancelReservation(id);
+        return ResponseEntity.ok()
+                .build();
+
     }
 
     @PostMapping("/{id}/approve")
