@@ -1,4 +1,4 @@
-package org.nurdiyarapp.reservationsystem;
+package org.nurdiyarapp.reservationsystem.reservations.entity;
 
 import jakarta.persistence.*;
 

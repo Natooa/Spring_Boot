@@ -1,11 +1,16 @@
-package org.nurdiyarapp.reservationsystem;
+package org.nurdiyarapp.reservationsystem.reservations.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.nurdiyarapp.reservationsystem.reservations.entity.Reservation;
+import org.nurdiyarapp.reservationsystem.reservations.entity.ReservationEntity;
+import org.nurdiyarapp.reservationsystem.reservations.entity.ReservationStatus;
+import org.nurdiyarapp.reservationsystem.reservations.repository.ReservationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -109,26 +114,22 @@ public class ReservationService {
         return toDomainReservation(reservationEntity);
     }
 
-    private boolean isReservationConflict(ReservationEntity reservation) {
-
-        var allReservations = reservationRepository.findAll();
-
-        for (ReservationEntity existingReservation : allReservations) {
-            if (reservation.getId().equals(existingReservation.getId())) {
-                continue;
-            }
-            if (!reservation.getRoomId().equals(existingReservation.getRoomId())) {
-                continue;
-            }
-            if (!existingReservation.getStatus().equals(ReservationStatus.APPROVED)) {
-                continue;
-            }
-            if (reservation.getStartDate().isBefore(existingReservation.getEndDate())
-                    && existingReservation.getStartDate().isBefore(reservation.getEndDate())) {
-                return true;
-            }
+    private boolean isReservationConflict(
+            Long roomId,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        List<Long> conflictingIds = reservationRepository.findConflictReservationIds(
+                roomId,
+                startDate,
+                endDate,
+                ReservationStatus.APPROVED
+        );
+        if(conflictingIds.isEmpty()) {
+            return false;
         }
-        return false;
+        LOGGER.info("Conflicting reservation ids: " + conflictingIds);
+        return true;
     }
 
     private Reservation toDomainReservation(ReservationEntity reservationEntity) {

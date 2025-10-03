@@ -1,4 +1,4 @@
-package org.nurdiyarapp.reservationsystem;
+package org.nurdiyarapp.reservationsystem.web;
 
 import java.time.LocalDateTime;
 

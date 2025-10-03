@@ -1,6 +1,7 @@
-package org.nurdiyarapp.reservationsystem;
+package org.nurdiyarapp.reservationsystem.reservations.repository;
 
-import jakarta.transaction.Transactional;
+import org.nurdiyarapp.reservationsystem.reservations.entity.ReservationEntity;
+import org.nurdiyarapp.reservationsystem.reservations.entity.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -42,7 +43,20 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
             UPDATE ReservationEntity r\s
             SET r.status = :status\s
             WHERE r.id = :id
+            AND :startDate < r.endDate
+            AND r.startDate < :endDate
             \s""")
     void setStatus(@Param("id")Long id,
                    @Param("status")ReservationStatus reservationStatus);
+
+    @Query("""
+    SELECT r.id FROM ReservationEntity r
+    WHERE r.roomId = :roomId
+    """)
+    List<Long> findConflictReservationIds(
+            @Param("roomId")Long roomId,
+            @Param("startDate")LocalDate startDate,
+            @Param("endDate")LocalDate endDate,
+            @Param("status")ReservationStatus status
+    );
 }
